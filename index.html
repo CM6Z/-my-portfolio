@@ -1,10 +1,183 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>刘培林的网站</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人网站</title>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <h1>欢迎访问我的网站</h1>
-    <p>网站正在建设中...</p>
+    <!-- 粒子背景 -->
+    <div id="particles-js" class="background-animation"></div>
+    
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">Peilin's <span>Portfolio</span></a>
+        </div>
+        <div class="menu-toggle" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </div>
+        <ul class="nav-links" id="nav-links">
+            <li><a href="index.html" class="active">首页</a></li>
+            <li><a href="about.html">关于我</a></li>
+            <li><a href="projects.html">项目</a></li>
+            <li><a href="contact.html">联系</a></li>
+            <li><a href="#" id="resume-btn" class="highlight-btn">查看简历</a></li>
+        </ul>
+    </nav>
+    
+    <!-- 主要内容 -->
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="animated-text">Hi，我是<span class="highlight">刘培林</span></h1>
+                <h2>解构者｜重构者｜跃迁者</h2>
+                <p>在纷繁的变量中寻找不变的真理，在每一次建模中靠近真实的世界。</p>
+                <div class="hero-buttons">
+                    <a href="projects.html" class="btn primary-btn">查看我的作品</a>
+                    <a href="contact.html" class="btn secondary-btn">联系我</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div class="image-container">
+                    <img src="assets/images/profile.jpg" alt="个人照片">
+                </div>
+            </div>
+        </section>
+        
+        <section class="skills-preview">
+            <h2>我的技能</h2>
+            <div class="skills-container">
+                <div class="skill-card">
+                    <i class="fab fa-html5"></i>
+                    <h3>HTML5</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 90%"></div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <i class="fab fa-css3-alt"></i>
+                    <h3>CSS3</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <i class="fab fa-js"></i>
+                    <h3>JavaScript</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <i class="fab fa-python"></i>
+                    <h3>Python</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div class="skill-card">
+                    <i class="fab fa-flask"></i>
+                    <h3>Flask</h3>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 70%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="center-button">
+                <a href="about.html" class="btn outline-btn">查看更多技能</a>
+            </div>
+        </section>
+        
+        <section class="featured-projects">
+            <h2>精选项目</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="assets/images/projects/project1.jpg" alt="项目1">
+                    </div>
+                    <div class="project-info">
+                        <h3>Generic Real Estate Consulting Project</h3>
+                        <p>A data-driven project analyzing rental prices across Victoria.</p>
+                        <div class="project-tags">
+                            <span>Beautifulsoup</span>
+                            <span>PySpark</span>
+                            <span>Pandas</span>
+                            <span>Google API</span>
+                            <span>Scikit-learning</span>
+                            <span>Statsmodels</span>
+                            <span>Jupyter Notebooks</span>
+                            <span>JavaScript</span>
+                        </div>
+                        <a href="#" class="btn small-btn">查看详情</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <div class="project-image">
+                        <img src="assets/images/projects/project2.jpg" alt="项目2">
+                    </div>
+                    <div class="project-info">
+                        <h3>Gold EA Development and Quantitative Analysis</h3>
+                        <p>A gold trading EA using web-scraped historical econ data and quantitative analysis to identify strategies.</p>
+                        <div class="project-tags">
+                            <span>Python</span>
+                            <span>Selenium</span>
+                            <span>SQLite</span>
+                            <span>MetaTrader</span>
+                            <span>Machine Learning</span>
+                        </div>
+                        <a href="#" class="btn small-btn">查看详情</a>
+                    </div>
+                </div>
+            </div>
+            <div class="center-button">
+                <a href="projects.html" class="btn primary-btn">查看所有项目</a>
+            </div>
+        </section>
+    </main>
+    
+    <!-- 简历模态框 -->
+    <div class="modal" id="resume-modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>我的简历</h2>
+            <div class="pdf-container">
+                <!-- PDF内容将由JavaScript动态插入 -->
+            </div>
+            <div class="modal-buttons">
+                <a href="assets/docs/resume.pdf" download class="btn primary-btn">下载PDF</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h3>Peilin's <span>Portfolio</span></h3>
+                <p>数据的海洋里航行，找到属于自己的黄金岛屿；</p>
+                <p>既想写出优雅的代码，也想过上不靠写代码的生活</p>
+            </div>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-github"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 刘培林个人网站. 保留所有权利。</p>
+        </div>
+    </footer>
+    
+    <!-- 脚本 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/particle.js"></script>
+    <script src="assets/js/pdf-viewer.js"></script>
 </body>
 </html>
