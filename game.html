@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock the Real Me - 像素平台跳跃游戏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+        }
+        .game-instructions {
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 15px;
+        border-radius: 5px;
+        margin: 10px 0;
+        max-width: 80%;
+    }
+
+        .game-instructions h3 {
+            color: #ff6b6b;
+            margin-top: 0;
+            margin-bottom: 10px;
+            }
+
+        .game-instructions ul {
+            text-align: left;
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .game-instructions li {
+            margin-bottom: 5px;
+        }
+
+        #mobile-controls {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .mobile-control-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        #mobile-controls button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            opacity: 0.7;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        #mobile-jump {
+            width: 80px !important;
+            background-color: #2ed573;
+        }
+        canvas {
+            display: block;
+            background-color: #111;
+            border: 4px solid #444;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+        
+        #start-screen, #end-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        #end-screen {
+            display: none;
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            text-shadow: 0 0 5px #ff0000;
+        }
+        
+        button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #ff4757;
+            transform: scale(1.05);
+        }
+        
+        #controls {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            color: #fff;
+            font-size: 14px;
+            z-index: 5;
+        }
+        
+        #death-counter {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #ff6b6b;
+            font-size: 18px;
+            z-index: 5;
+        }
+        
+        .hidden-content {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #222;
+            border-radius: 10px;
+            max-width: 80%;
+            max-height: 60%;
+            overflow-y: auto;
+        }
+        
+        .hidden-content h2 {
+            color: #ff6b6b;
+            border-bottom: 2px solid #ff6b6b;
+            padding-bottom: 10px;
+        }
+        
+        .hidden-content ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="start-screen">
+            <h1>Unlock the Real Me</h1>
+            <p>你以为你能轻易认识我？</p>
+            
+            <!-- 添加游戏说明 -->
+            <div class="game-instructions">
+                <h3>游戏玩法：</h3>
+                <ul>
+                    <li>方向键移动，空格键跳跃</li>
+                    <li>找到并触碰黄色开关激活隐藏平台</li>
+                    <li>绿色跳板可以跳得更高</li>
+                    <li>红色平台会消失，火焰会使你重置</li>
+                    <li>有概率找到真正的"真相之门"，小心假门！</li>
+                </ul>
+            </div>
+            
+            <button id="start-button">开始挑战</button>
+        </div>
+        
+        <div id="end-screen">
+            <h1>恭喜你找到了真相之门！</h1>
+            <button id="unlock-button">打开真相之门</button>
+            <div class="hidden-content" id="about-me" style="display: none;">
+                <h2>我最喜欢的事情</h2>
+                <ul>
+                    <!-- 这里放你最喜欢的事情列表 -->
+                    <li>示例：独立游戏开发</li>
+                    <li>示例：像素艺术创作</li>
+                    <li>示例：探索新的编程技术</li>
+                    <li>示例：解决复杂的技术问题</li>
+                </ul>
+                <h2>关于我</h2>
+                <p><!-- 这里放你的个人介绍 --></p>
+                <button id="back-to-site">返回主网站</button>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="controls">方向键移动，空格键跳跃</div>
+        <div id="death-counter">死亡次数: 0</div>
+        <div id="mobile-controls" style="display: none;">
+            <div class="mobile-control-row">
+                <button id="mobile-jump">跳跃</button>
+            </div>
+            <div class="mobile-control-row">
+                <button id="mobile-left">←</button>
+                <button id="mobile-right">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏类
+        class Game {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.width = this.canvas.width;
+                this.height = this.canvas.height;
+                this.player = new Player(this);
+                this.platforms = [];
+                this.traps = [];
+                this.jumpPads = [];
+                this.hiddenPlatforms = [];
+                this.switches = [];
+                this.door = null;
+                this.fakeDoor = null;
+                this.deathCount = 0;
+                this.deathCounterElement = document.getElementById('death-counter');
+                
+                this.gameState = 'start';
+                this.setupEventListeners();
+                this.initializeLevel();
+            }
+            
+            setupEventListeners() {
+                document.getElementById('start-button').addEventListener('click', () => {
+                    document.getElementById('start-screen').style.display = 'none';
+                    this.gameState = 'playing';
+                    this.gameLoop();
+                });
+                
+                document.getElementById('unlock-button').addEventListener('click', () => {
+                    document.getElementById('about-me').style.display = 'block';
+                    document.getElementById('unlock-button').style.display = 'none';
+                });
+                
+                document.getElementById('back-to-site').addEventListener('click', () => {
+                    // 这里添加返回主网站的链接
+                    window.location.href = '../index.html';
+                });
+
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
+                    document.getElementById('mobile-controls').style.display = 'flex';
+                    document.getElementById('controls').textContent = '点击屏幕按钮控制';
+                    
+                    // 添加触摸事件
+                    document.getElementById('mobile-left').addEventListener('touchstart', () => {
+                        this.player.keys['ArrowLeft'] = true;
+                    });
+                    document.getElementById('mobile-left').addEventListener('touchend', () => {
+                        this.player.keys['ArrowLeft'] = false;
+                    });
+                    
+                    document.getElementById('mobile-right').addEventListener('touchstart', () => {
+                        this.player.keys['ArrowRight'] = true;
+                    });
+                    document.getElementById('mobile-right').addEventListener('touchend', () => {
+                        this.player.keys['ArrowRight'] = false;
+                    });
+                    
+                    document.getElementById('mobile-jump').addEventListener('touchstart', () => {
+                        if (this.player.onGround) {
+                            this.player.vy = -this.player.jumpForce;
+                            this.player.onGround = false;
+                        }
+                    });
+                }
+            }
+            
+            initializeLevel() {
+                // 创建边界墙
+                this.platforms.push(new Platform(0, this.height - 20, this.width, 20, '#555')); // 底部
+                this.platforms.push(new Platform(0, 0, 20, this.height, '#555')); // 左边
+                this.platforms.push(new Platform(this.width - 20, 0, 20, this.height, '#555')); // 右边
+                
+                // 创建平台
+                this.platforms.push(new Platform(100, 500, 200, 20, '#555'));
+                this.platforms.push(new Platform(400, 450, 150, 20, '#555'));
+                this.platforms.push(new Platform(250, 380, 100, 20, '#555'));
+                this.platforms.push(new Platform(500, 350, 200, 20, '#555'));
+                this.platforms.push(new Platform(150, 300, 150, 20, '#555'));
+                this.platforms.push(new Platform(400, 250, 120, 20, '#555'));
+                this.platforms.push(new Platform(250, 180, 100, 20, '#555'));
+                this.platforms.push(new Platform(600, 200, 100, 20, '#555'));
+                // 创建两个门（左右各一个）
+                this.door = new Door(650, 150, 40, 50, '#7bed9f');
+                this.fakeDoor = new Door(100, 150, 40, 50, '#7bed9f');
+                // 随机决定哪个是真门
+                this.randomizeDoors();
+                // 创建瞬间消失的地板
+                this.traps.push(new VanishingPlatform(350, 400, 80, 10, '#ff6b6b'));
+                this.traps.push(new VanishingPlatform(600, 300, 80, 10, '#ff6b6b'));
+                this.traps.push(new VanishingPlatform(100, 200, 80, 10, '#ff6b6b'));
+                
+                // 创建火焰障碍
+                this.traps.push(new FireTrap(300, 360, 40, 20, '#ff9f43'));
+                this.traps.push(new FireTrap(550, 330, 40, 20, '#ff9f43'));
+                this.traps.push(new FireTrap(200, 280, 40, 20, '#ff9f43'));
+                
+                // 创建跳板
+                this.jumpPads.push(new JumpPad(300, 480, 40, 10, '#2ed573'));
+                this.jumpPads.push(new JumpPad(520, 330, 40, 10, '#2ed573'));
+                
+                // 创建开关和隐藏平台
+                this.switches.push(new Switch(170, 260, 20, 20, '#feca57'));
+                this.hiddenPlatforms.push(new HiddenPlatform(450, 120, 100, 20, '#555', this.switches[0]));
+                
+                
+                // 设置玩家初始位置
+                this.player.x = 50;
+                this.player.y = this.height - 100;
+            }
+            
+            update() {
+                this.player.update();
+                
+                // 更新陷阱
+                this.traps.forEach(trap => {
+                    trap.update();
+                    if (trap.checkCollision(this.player)) {
+                        this.resetPlayer();
+                    }
+                });
+                
+                // 更新跳板
+                this.jumpPads.forEach(pad => {
+                    if (pad.checkCollision(this.player)) {
+                        this.player.vy = -15; // 高跳
+                    }
+                });
+                
+                // 更新开关
+                this.switches.forEach(switchObj => {
+                    if (switchObj.checkCollision(this.player)) {
+                        switchObj.activate();
+                    }
+                });
+                
+                // 检查是否到达终点
+                if (this.door && this.door.checkCollision(this.player)) {
+                    this.gameState = 'end';
+                    this.showEndScreen();
+                }
+                // 检查是否碰到假门
+                if (this.fakeDoor && this.fakeDoor.checkCollision(this.player)) {
+                    this.resetPlayer(); // 碰到假门重置
+                }
+                
+                // 检查是否到达终点
+                if (this.door && this.door.checkCollision(this.player)) {
+                    this.gameState = 'end';
+                    this.showEndScreen();
+                }
+                
+                // 更新隐藏平台
+                this.hiddenPlatforms.forEach(platform => {
+                    platform.update();
+                });
+            }
+            
+            resetPlayer() {
+                this.deathCount++;
+                this.deathCounterElement.textContent = `死亡次数: ${this.deathCount}`;
+                this.player.x = 50;
+                this.player.y = this.height - 100;
+                this.player.vy = 0;
+                // 重置时随机真假门
+                this.randomizeDoors();
+                // 重置开关和隐藏平台
+                this.switches.forEach(switchObj => switchObj.reset());
+                this.hiddenPlatforms.forEach(platform => platform.reset());
+            }
+            
+            render() {
+                this.ctx.clearRect(0, 0, this.width, this.height);
+                
+                // 绘制背景
+                this.ctx.fillStyle = '#111';
+                this.ctx.fillRect(0, 0, this.width, this.height);
+                
+                // 绘制星星背景
+                this.drawStarryBackground();
+                
+                // 绘制平台
+                this.platforms.forEach(platform => platform.draw(this.ctx));
+                
+                // 绘制隐藏平台
+                this.hiddenPlatforms.forEach(platform => platform.draw(this.ctx));
+                
+                // 绘制陷阱
+                this.traps.forEach(trap => trap.draw(this.ctx));
+                
+                // 绘制跳板
+                this.jumpPads.forEach(pad => pad.draw(this.ctx));
+                
+                // 绘制开关
+                this.switches.forEach(switchObj => switchObj.draw(this.ctx));
+                
+                // 绘制门
+                if (this.door) {
+                    this.door.draw(this.ctx);
+                }
+    
+                // 绘制假门
+                if (this.fakeDoor) {
+                    this.fakeDoor.draw(this.ctx);
+                }
+                
+                // 绘制玩家
+                this.player.draw();
+                
+                // 绘制起点提示
+                if (this.player.x < 100 && this.player.y > this.height - 150) {
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    this.ctx.font = '14px Courier New';
+                    this.ctx.fillText('起点: "你以为你能轻易认识我？"', 40, this.height - 150);
+                }
+                
+                // 绘制终点提示
+                if (this.door && Math.abs(this.player.x - this.door.x) < 100 && Math.abs(this.player.y - this.door.y) < 100) {
+                    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    this.ctx.font = '14px Courier New';
+                    this.ctx.fillText('"真相之门"', this.door.x - 20, this.door.y - 10);
+                }
+            }
+            randomizeDoors() {
+            // 50%的概率交换真假门
+            if (Math.random() > 0.5) {
+                const temp = this.door;
+                this.door = this.fakeDoor;
+                this.fakeDoor = temp;
+            }
+        }
+            drawStarryBackground() {
+                // 绘制简单的星星背景
+                this.ctx.fillStyle = '#fff';
+                for (let i = 0; i < 100; i++) {
+                    let x = Math.random() * this.width;
+                    let y = Math.random() * this.height;
+                    let size = Math.random() * 2;
+                    this.ctx.fillRect(x, y, size, size);
+                }
+            }
+            
+            gameLoop() {
+                if (this.gameState === 'playing') {
+                    this.update();
+                    this.render();
+                    requestAnimationFrame(() => this.gameLoop());
+                }
+            }
+            
+            showEndScreen() {
+                document.getElementById('end-screen').style.display = 'flex';
+            }
+        }
+        
+        // 玩家类
+        class Player {
+            constructor(game) {
+                this.game = game;
+                this.width = 20;
+                this.height = 30;
+                this.x = 50;
+                this.y = game.height - 100;
+                this.vx = 0;
+                this.vy = 0;
+                this.speed = 5;
+                this.jumpForce = 10;
+                this.gravity = 0.5;
+                this.onGround = false;
+                this.color = '#70a1ff';
+                
+                this.keys = {};
+                window.addEventListener('keydown', e => this.keyDown(e));
+                window.addEventListener('keyup', e => this.keyUp(e));
+            }
+            
+            keyDown(e) {
+                this.keys[e.code] = true;
+                
+                // 跳跃
+                if (e.code === 'Space' && this.onGround) {
+                    this.vy = -this.jumpForce;
+                    this.onGround = false;
+                }
+            }
+            
+            keyUp(e) {
+                this.keys[e.code] = false;
+            }
+            
+            update() {
+                // 水平移动
+                this.vx = 0;
+                if (this.keys['ArrowLeft']) this.vx = -this.speed;
+                if (this.keys['ArrowRight']) this.vx = this.speed;
+                
+                // 应用重力
+                this.vy += this.gravity;
+                
+                // 更新位置
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // 检测与平台的碰撞
+                this.onGround = false;
+                this.checkPlatformCollisions();
+                
+                // 防止玩家走出边界
+                if (this.x < 0) this.x = 0;
+                if (this.x + this.width > this.game.width) this.x = this.game.width - this.width;
+                
+            
+                // 如果玩家掉出了屏幕，重置位置
+                if (this.y > this.game.height) {
+                    this.game.resetPlayer();
+                }
+            }
+            
+            checkPlatformCollisions() {
+                // 检查与普通平台的碰撞
+                const platforms = [...this.game.platforms, ...this.game.hiddenPlatforms.filter(p => p.visible)];
+                
+                for (let platform of platforms) {
+                    // 检查垂直碰撞
+                    if (this.x + this.width > platform.x && 
+                        this.x < platform.x + platform.width &&
+                        this.y + this.height >= platform.y &&
+                        this.y + this.height <= platform.y + platform.height / 2) {
+                        
+                        this.y = platform.y - this.height;
+                        this.vy = 0;
+                        this.onGround = true;
+                    }
+                    
+                    // 检查水平碰撞 (左右两侧)
+                    if (this.y + this.height > platform.y && 
+                        this.y < platform.y + platform.height) {
+                        // 左侧碰撞
+                        if (this.x + this.width >= platform.x && 
+                            this.x + this.width <= platform.x + 10) {
+                            this.x = platform.x - this.width;
+                        }
+                        // 右侧碰撞
+                        else if (this.x <= platform.x + platform.width && 
+                                this.x >= platform.x + platform.width - 10) {
+                            this.x = platform.x + platform.width;
+                        }
+                    }
+                }
+            }
+            
+            draw() {
+                // 绘制角色
+                this.game.ctx.fillStyle = this.color;
+                this.game.ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 绘制眼睛
+                this.game.ctx.fillStyle = '#111';
+                this.game.ctx.fillRect(this.x + 5, this.y + 5, 4, 4);
+                this.game.ctx.fillRect(this.x + 12, this.y + 5, 4, 4);
+            }
+        }
+        
+        // 平台类
+        class Platform {
+            constructor(x, y, width, height, color) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+            }
+            
+            draw(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        }
+        
+        // 隐藏平台类
+        class HiddenPlatform extends Platform {
+            constructor(x, y, width, height, color, switchObj) {
+                super(x, y, width, height, color);
+                this.switchObj = switchObj;
+                this.visible = false;
+            }
+            
+            draw(ctx) {
+                if (this.visible) {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                } else {
+                    // 绘制虚线轮廓
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(this.x, this.y, this.width, this.height);
+                    ctx.setLineDash([]);
+                }
+            }
+            
+            update() {
+                this.visible = this.switchObj.activated;
+            }
+            
+            reset() {
+                this.visible = false;
+            }
+        }
+        
+        // 开关类
+        class Switch {
+            constructor(x, y, width, height, color) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+                this.activatedColor = '#2ed573';
+                this.activated = false;
+            }
+            
+            draw(ctx) {
+                ctx.fillStyle = this.activated ? this.activatedColor : this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+            
+            checkCollision(player) {
+                return (player.x + player.width > this.x &&
+                        player.x < this.x + this.width &&
+                        player.y + player.height > this.y &&
+                        player.y < this.y + this.height);
+            }
+            
+            activate() {
+                this.activated = true;
+            }
+            
+            reset() {
+                this.activated = false;
+            }
+        }
+        
+        // 瞬间消失的地板类
+        class VanishingPlatform {
+            constructor(x, y, width, height, color) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+                this.visible = true;
+                this.vanishTime = 1000; // 1秒后消失
+                this.reappearTime = 3000; // 3秒后重新出现
+                this.timer = null;
+                this.playerDetected = false;
+            }
+            
+            draw(ctx) {
+                if (this.visible) {
+                    ctx.fillStyle = this.playerDetected ? 'rgba(255, 107, 107, 0.7)' : this.color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+            
+            update() {
+                // 重置玩家检测状态
+                this.playerDetected = false;
+            }
+            
+            checkCollision(player) {
+                const collision = (player.x + player.width > this.x &&
+                                  player.x < this.x + this.width &&
+                                  player.y + player.height >= this.y &&
+                                  player.y + player.height <= this.y + this.height / 2 &&
+                                  player.vy >= 0);
+                
+                if (collision && this.visible && !this.playerDetected) {
+                    this.playerDetected = true;
+                    
+                    // 取消先前的定时器
+                    if (this.timer) clearTimeout(this.timer);
+                    
+                    // 设置消失定时器
+                    this.timer = setTimeout(() => {
+                        this.visible = false;
+                        
+                        // 设置重新出现定时器
+                        this.timer = setTimeout(() => {
+                            this.visible = true;
+                            this.timer = null;
+                        }, this.reappearTime);
+                    }, this.vanishTime);
+                }
+                
+                return false; // 不需要重置玩家
+            }
+        }
+        
+        // 火焰障碍类
+        class FireTrap {
+            constructor(x, y, width, height, color) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+                this.originalX = x;
+                this.speed = 1;
+                this.range = 50;
+            }
+            
+            draw(ctx) {
+                // 绘制火焰
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 绘制火焰粒子
+                for (let i = 0; i < 5; i++) {
+                    const particleX = this.x + Math.random() * this.width;
+                    const particleY = this.y - Math.random() * 10;
+                    const size = Math.random() * 5 + 2;
+                    
+                    ctx.fillStyle = `rgba(255, ${Math.floor(Math.random() * 100 + 100)}, 0, ${Math.random() * 0.5 + 0.5})`;
+                    ctx.fillRect(particleX, particleY, size, size);
+                }
+            }
+            
+            update() {
+                // 移动火焰
+                this.x += this.speed;
+                
+                // 检查是否达到最大范围
+                if (Math.abs(this.x - this.originalX) > this.range) {
+                    this.speed *= -1;
+                }
+            }
+            
+            checkCollision(player) {
+                return (player.x + player.width > this.x &&
+                        player.x < this.x + this.width &&
+                        player.y + player.height > this.y &&
+                        player.y < this.y + this.height);
+            }
+        }
+        
+        // 跳板类
+        class JumpPad {
+            constructor(x, y, width, height, color) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+                this.activated = false;
+                this.activationTimer = null;
+            }
+            
+            draw(ctx) {
+                // 绘制跳板
+                ctx.fillStyle = this.activated ? '#1e90ff' : this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 绘制跳板指示器
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.width / 2, this.y);
+                ctx.lineTo(this.x + this.width * 0.25, this.y + this.height);
+                ctx.lineTo(this.x + this.width * 0.75, this.y + this.height);
+                ctx.closePath();
+                ctx.fill();
+                
+                // 如果激活，绘制特效
+                if (this.activated) {
+                    ctx.fillStyle = 'rgba(30, 144, 255, 0.5)';
+                    ctx.fillRect(this.x - 5, this.y - 10, this.width + 10, 10);
+                }
+            }
+            
+            checkCollision(player) {
+                const collision = (player.x + player.width > this.x &&
+                                  player.x < this.x + this.width &&
+                                  player.y + player.height >= this.y &&
+                                  player.y + player.height <= this.y + this.height / 2 &&
+                                  player.vy >= 0);
+                
+                if (collision && !this.activated) {
+                    this.activated = true;
+                    
+                    // 取消之前的定时器
+                    if (this.activationTimer) clearTimeout(this.activationTimer);
+                    
+                    // 设置新的定时器
+                    this.activationTimer = setTimeout(() => {
+                        this.activated = false;
+                        this.activationTimer = null;
+                    }, 300);
+                }
+                
+                return collision;
+            }
+        }
+        
+        // 终点门类
+        class Door {
+            constructor(x, y, width, height, color) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color;
+            }
+            
+            draw(ctx) {
+                // 绘制门
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 绘制门的装饰
+                ctx.fillStyle = '#222';
+                ctx.fillRect(this.x + this.width / 4, this.y + this.height / 4, this.width / 2, this.height / 2);
+                
+                // 发光效果
+                ctx.shadowColor = '#7bed9f';
+                ctx.shadowBlur = 10;
+                ctx.strokeStyle = '#FFF';
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+                ctx.shadowBlur = 0;
+            }
+            
+            checkCollision(player) {
+                return (player.x + player.width > this.x &&
+                        player.x < this.x + this.width &&
+                        player.y + player.height > this.y &&
+                        player.y < this.y + this.height);
+            }
+        }
+        
+        // 开始游戏
+        window.onload = () => {
+            const game = new Game();
+        };
+    </script>
+</body>
+</html>
